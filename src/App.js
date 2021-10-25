@@ -1,10 +1,11 @@
 // import './App.css';
 import { withStyles } from "@material-ui/styles";
-import { React, useState, useEffect } from 'react';
+import { React, useState, useEffect, useRef, memo } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import weatherFetch from './APIs/weatherAPI'
-import geoData from './APIs/geoAPI'
+import { geoForward, geoReverse } from './APIs/geoAPI'
+import capitalize from './Helpers/capitalize'
 
 const styles = {
   App: {
@@ -20,54 +21,88 @@ const styles = {
     borderRadius: '10px'
   }
 }
+
 function App(props) {
-  const [city, setCity] = useState('');
+  const [isReversed, setIsReversed] = useState(false);
+  const [newCity, setNewCity] = useState('');
   const [apiCity, setApiCity] = useState('');
-  const [Long, setLong] = useState('');
-  const [Latt, setLatt] = useState('');
-  const [temp, setTemp] = useState('');
+  const [Long, setLong] = useState();
+  const [Latt, setLatt] = useState();
+  const [temp, setTemp] = useState();
   const { classes } = props;
+
+  // helpers:
+  const useMountEffect = (func) => useEffect(func, []);
+  const previousValues = useRef({ Long, Latt })
+
   const clearCity = () => {
-    setCity('')
+    setNewCity('')
   }
 
   const handleChange = (e) => {
     e.preventDefault()
-    setCity(e.target.value)
+    setNewCity(e.target.value)
 
   };
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setApiCity(city)
-    clearCity()
+    if (newCity && newCity !== apiCity) {
+      setApiCity(capitalize(newCity))
+      clearCity()
+      setIsReversed(false)
+    }
   };
 
   const getCurrLocation = () => {
-    if (!apiCity && !Long && !Latt) {
-      const options = {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
-      };
-      function success(pos) {
-        let crd = pos.coords;
-        setLatt(crd.latitude)
-        setLong(crd.longitude)
-        console.log(`youre at: (${crd.latitude}, ${crd.longitude})`);
-      }
-
-      function error(err) {
-        console.warn(`ERROR(${err.code}): ${err.message}`);
-      }
-      setApiCity(navigator.geolocation.getCurrentPosition(success, error, options))
+    const options = {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0
+    };
+    function success(pos) {
+      let crd = pos.coords;
+      setLatt(crd.latitude)
+      setLong(crd.longitude)
+      console.log(`Curr Location: (${crd.latitude}, ${crd.longitude})`);
     }
+
+    function error(err) {
+      console.warn(`ERROR(${err.code}): ${err.message}`);
+    }
+    setApiCity(navigator.geolocation.getCurrentPosition(success, error, options))
   }
+
+  // Get Coords for current location,(Runs only on first Render)
+  useMountEffect(getCurrLocation);
+
+  // get city name off of current coords
   useEffect(() => {
-    getCurrLocation()
-    geoData(apiCity, setLong, setLatt)
-    weatherFetch(Long, Latt, setTemp)
-  }, [apiCity, Latt, Long]);
+    if (!apiCity && Latt && Long) {
+      geoReverse(Latt, Long, setApiCity)
+      setIsReversed(true)
+    };
+  }, [Latt, Long])
+
+  // Get Coords for new city
+  useEffect(() => {
+    if (!isReversed) {
+      geoForward(apiCity, setLatt, setLong)
+    }
+  }, [apiCity]);
+
+  // Get Temprature
+  useEffect(() => {
+    if (previousValues.current.Long !== Long &&
+      previousValues.current.Latt !== Latt
+    ) {
+      // execute logic
+      weatherFetch(Latt, Long, setTemp)
+      // update to curr values
+      previousValues.current = { Long, Latt }
+    };
+  })
+
 
 
   return (
@@ -75,8 +110,7 @@ function App(props) {
       <div className={classes.Container}>
         <h1>{apiCity}</h1>
         <div className={classes.Inner}>
-
-          <p>please enter your location: </p>
+          {!apiCity ? <p>please enter your location: </p> : ''}
           <Box
             component="form"
             sx={{
@@ -88,7 +122,7 @@ function App(props) {
             onSubmit={handleSubmit}
 
           >
-            <TextField id="outlined-basic" label="Location" variant="outlined" value={city} />
+            <TextField id="outlined-basic" label="Location" variant="outlined" value={newCity} />
           </Box>
           {temp ? <p>The temprature is: {temp} degrees</p> : null}
         </div>
@@ -98,5 +132,4 @@ function App(props) {
   );
 }
 
-export default withStyles(styles)(App);
-// export { city, setCity, temp, setTemp }
+export default withStyles(styles)(memo(App));
