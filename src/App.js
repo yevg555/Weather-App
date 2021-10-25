@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField';
 import weatherFetch from './APIs/weatherAPI'
 import { geoForward, geoReverse } from './APIs/geoAPI'
 import capitalize from './Helpers/capitalize'
+import classNames from "classnames";
 
 const styles = {
   App: {
@@ -16,29 +17,38 @@ const styles = {
   Container: {
     height: '90vh',
     width: '80%',
-    background: 'linear-gradient(47.75deg, #EBEBEB 7.07%, #EEEEEE 97.3%)',
+    // background: 'linear-gradient(47.75deg, #EBEBEB 7.07%, #EEEEEE 97.3%)',
     textAlign: 'center',
     borderRadius: '10px'
+  },
+  Dark: {
+    background: 'linear-gradient(47.75deg, #082276 7.07%, #030F34 97.3%)',
+    color: 'white'
+  },
+  Light: {
+    background: 'linear-gradient(47.75deg, #EBEBEB 7.07%, #EEEEEE 97.3%)'
   }
 }
 
 function App(props) {
-  const [isReversed, setIsReversed] = useState(false);
   const [newCity, setNewCity] = useState('');
   const [apiCity, setApiCity] = useState('');
   const [Long, setLong] = useState();
   const [Latt, setLatt] = useState();
   const [temp, setTemp] = useState();
+  const [isReversed, setIsReversed] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const { classes } = props;
 
   // helpers:
   const useMountEffect = (func) => useEffect(func, []);
+
   const previousValues = useRef({ Long, Latt })
 
   const clearCity = () => {
     setNewCity('')
   }
-
+  // changers:
   const handleChange = (e) => {
     e.preventDefault()
     setNewCity(e.target.value)
@@ -53,7 +63,7 @@ function App(props) {
       setIsReversed(false)
     }
   };
-
+  //API's
   const getCurrLocation = () => {
     const options = {
       enableHighAccuracy: true,
@@ -97,17 +107,18 @@ function App(props) {
       previousValues.current.Latt !== Latt
     ) {
       // execute logic
-      weatherFetch(Latt, Long, setTemp)
+      weatherFetch(Latt, Long, setTemp, setIsDark)
       // update to curr values
       previousValues.current = { Long, Latt }
     };
   })
 
-
-
   return (
     <div className={classes.App}>
-      <div className={classes.Container}>
+      <div className={classNames(classes.Container, {
+        [classes.Dark]: isDark,
+        [classes.Light]: !isDark
+      })} >
         <h1>{apiCity}</h1>
         <div className={classes.Inner}>
           {!apiCity ? <p>please enter your location: </p> : ''}
