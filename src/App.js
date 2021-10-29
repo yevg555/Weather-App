@@ -7,6 +7,7 @@ import weatherFetch from './APIs/weatherAPI'
 import { geoForward, geoReverse } from './APIs/geoAPI'
 import capitalize from './Helpers/capitalize'
 import classNames from "classnames";
+import Celcius from './c-new.js'
 
 const styles = {
   App: {
@@ -17,16 +18,67 @@ const styles = {
   Container: {
     height: '90vh',
     width: '80%',
-    // background: 'linear-gradient(47.75deg, #EBEBEB 7.07%, #EEEEEE 97.3%)',
     textAlign: 'center',
-    borderRadius: '10px'
+    borderRadius: '10px',
+    color: '#FFFFFF',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    borderRadius: '10px 10px 0px 0px',
+    "& p": {
+      filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
+    }
+  },
+  Headers: {
+    filter: 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
+    padding: 0,
+
+    "& h1": {
+      fontSize: '30px',
+      fontStyle: 'normal',
+      fontWeight: 500,
+      marginTop: '2rem',
+      marginBottom: '0px',
+
+
+    },
+    "& p": {
+      fontSize: '0.7rem',
+      fontStyle: 'normal',
+      fontWeight: 300,
+      marginTop: '0px',
+      marginBotom: '30px',
+
+
+    }
+  },
+  TempOuter: {
+    textAlign: 'center',
+  },
+  Span: {
+    height: '1em',
+
+  },
+  SVG: {
+    display: 'inline-block',
+    height: '1.25em',
+    lineHeight: '1em',
+    marginLeft: '0.25em',
+    /* just for vertical alignment as svg don't have descenders like fonts */
+    verticalAlign: '-0.3em',
   },
   Dark: {
     background: 'linear-gradient(47.75deg, #082276 7.07%, #030F34 97.3%)',
-    color: 'white'
+    color: '#FFFFFF',
   },
   Light: {
-    background: 'linear-gradient(47.75deg, #EBEBEB 7.07%, #EEEEEE 97.3%)'
+    background: '#828CAE',
+    // background: 'linear-gradient(47.75deg, #EBEBEB 7.07%, #EEEEEE 97.3%)'
+  },
+  BottomMenu: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '16px 16px 16px 5px',
   }
 }
 
@@ -119,7 +171,14 @@ function App(props) {
         [classes.Dark]: isDark,
         [classes.Light]: !isDark
       })} >
-        <h1>{apiCity}</h1>
+        {apiCity ?
+          <div className={classes.Headers}>
+            <h1>{apiCity}</h1>
+            <p>October 26, 2021</p>
+          </div>
+          : ''
+        }
+
         <div className={classes.Inner}>
           {!apiCity ? <p>please enter your location: </p> : ''}
           <Box
@@ -135,9 +194,17 @@ function App(props) {
           >
             <TextField id="outlined-basic" label="Location" variant="outlined" value={newCity} />
           </Box>
-          {temp ? <p>The temprature is: {temp} degrees</p> : null}
+          {temp ?
+            <p className={classes.TempOuter}>
+              <span className={classes.Span}>
+                {temp}
+                < Celcius temp={temp} classNameSVG={classes.SVG} />
+              </span>
+            </p>
+            : null}
         </div>
-      </div>
+        <div className={classes.BottomMenu}></div>
+      </div >
     </div >
 
   );
