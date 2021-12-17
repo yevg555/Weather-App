@@ -7,7 +7,9 @@ import weatherFetch from './APIs/weatherAPI'
 import { geoForward, geoReverse } from './APIs/geoAPI'
 import capitalize from './Helpers/capitalize'
 import classNames from "classnames";
-import Celcius from './c-new.js'
+import Celcius from './images/c-new.js'
+import TempIcon from './images/tempIcon'
+import HourForecast from "./Components/HourForecast";
 
 const styles = {
   App: {
@@ -45,26 +47,38 @@ const styles = {
       fontStyle: 'normal',
       fontWeight: 300,
       marginTop: '0px',
-      marginBotom: '30px',
+      color: 'rgba(255, 255, 255, 0.75)'
 
 
     }
+  },
+  TempIcon: {
+    display: 'inline-block',
+    height: '4em',
+    lineHeight: '1em',
+    marginTop: '2em',
+    /* just for vertical alignment as svg don't have descenders like fonts */
+    // verticalAlign: '-0.3em',
   },
   TempOuter: {
     textAlign: 'center',
   },
   Span: {
     height: '1em',
+    fontWeight: 500,
+    fontSize: '2rem',
+    paddingLeft: '0.95rem',
 
   },
   SVG: {
     display: 'inline-block',
-    height: '1.25em',
+    height: '1em',
     lineHeight: '1em',
-    marginLeft: '0.25em',
+    marginLeft: '0.14em',
     /* just for vertical alignment as svg don't have descenders like fonts */
-    verticalAlign: '-0.3em',
+    verticalAlign: '-0.25em',
   },
+
   Dark: {
     background: 'linear-gradient(47.75deg, #082276 7.07%, #030F34 97.3%)',
     color: '#FFFFFF',
@@ -73,12 +87,46 @@ const styles = {
     background: '#828CAE',
     // background: 'linear-gradient(47.75deg, #EBEBEB 7.07%, #EEEEEE 97.3%)'
   },
+  // put all Elements in one div called 'Bar' and space them evenly with the values below elements accordingly
+  Bar: {
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    padding: '1rem',
+    // make span fontSize 15px
+    "& span": {
+      fontSize: '0.7rem',
+      fontWeight: 300,
+    },
+    // make text inside div size of 26px
+    "& p": {
+      fontSize: '2rem',
+      fontWeight: 500,
+    },
+  },
+
+  TodayReport: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '2rem',
+    fontSize: '0.7rem',
+    fontWeight: 300,
+  },
+  ViewReport: {
+    "&:hover": {
+      color: '#002688',
+      cursor: 'pointer'
+    },
+  },
+
   BottomMenu: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     padding: '16px 16px 16px 5px',
+
   }
 }
 
@@ -88,9 +136,14 @@ function App(props) {
   const [Long, setLong] = useState();
   const [Latt, setLatt] = useState();
   const [temp, setTemp] = useState();
+  const [clouds, setClouds] = useState();
+  const [humidity, setHumidity] = useState();
+  const [wind, setWind] = useState();
+  const [date, setDate] = useState('');
   const [isReversed, setIsReversed] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const { classes } = props;
+
 
   // helpers:
   const useMountEffect = (func) => useEffect(func, []);
@@ -115,7 +168,17 @@ function App(props) {
       setIsReversed(false)
     }
   };
-  //API's
+  // function that returns the current month verbly, day, and year
+  const getDate = () => {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    const date = new Date()
+    const day = date.getDate()
+    const month = months[date.getMonth()]
+    const year = date.getFullYear()
+    const dateString = `${month} ${day}, ${year}`
+    setDate(dateString)
+  };
+
   const getCurrLocation = () => {
     const options = {
       enableHighAccuracy: true,
@@ -137,6 +200,7 @@ function App(props) {
 
   // Get Coords for current location,(Runs only on first Render)
   useMountEffect(getCurrLocation);
+  useMountEffect(getDate);
 
   // get city name off of current coords
   useEffect(() => {
@@ -159,12 +223,13 @@ function App(props) {
       previousValues.current.Latt !== Latt
     ) {
       // execute logic
-      weatherFetch(Latt, Long, setTemp, setIsDark)
+      weatherFetch(Latt, Long, setTemp, setIsDark, setClouds, setHumidity, setWind)
       // update to curr values
       previousValues.current = { Long, Latt }
     };
   })
 
+  const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   return (
     <div className={classes.App}>
       <div className={classNames(classes.Container, {
@@ -174,14 +239,15 @@ function App(props) {
         {apiCity ?
           <div className={classes.Headers}>
             <h1>{apiCity}</h1>
-            <p>October 26, 2021</p>
+            <p>{date}</p>
           </div>
           : ''
         }
 
         <div className={classes.Inner}>
-          {!apiCity ? <p>please enter your location: </p> : ''}
-          <Box
+          <TempIcon classNameTempIcon={classes.TempIcon} />
+          {/* {!apiCity ? <p>please enter your location: </p> : ''} */}
+          {/* <Box
             component="form"
             sx={{
               '& > :not(style)': { m: 1, width: '25ch' },
@@ -193,7 +259,7 @@ function App(props) {
 
           >
             <TextField id="outlined-basic" label="Location" variant="outlined" value={newCity} />
-          </Box>
+          </Box> */}
           {temp ?
             <p className={classes.TempOuter}>
               <span className={classes.Span}>
@@ -203,6 +269,24 @@ function App(props) {
             </p>
             : null}
         </div>
+        {temp ?
+          <div className={classes.Bar}>
+            <div className={classes.BarElement1}>
+              <span>Cloudiness</span><div>{`${Math.floor(clouds)}%`}</div>
+            </div>
+            <div className={classes.BarElement2}>
+              <span>Humidity</span><div>{`${humidity}%`}</div>
+            </div>
+            <div className={classes.BarElement3}>
+              <span>Wind</span><div>{`${Math.floor(wind)}km/h`}</div>
+            </div>
+          </div>
+          : ''}
+        <div className={classes.TodayReport}>
+          <div className={classes.Today}>Today</div>
+          <div className={classes.ViewReport}>View Report</div>
+        </div>
+        < HourForecast hours={hours} />
         <div className={classes.BottomMenu}></div>
       </div >
     </div >
