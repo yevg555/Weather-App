@@ -9,7 +9,7 @@ import capitalize from './Helpers/capitalize'
 import classNames from "classnames";
 import Celcius from './images/c-new.js'
 import TempIcon from './images/tempIcon'
-import HourForecast from "./Components/HourForecast";
+import DailyForecast from "./Components/DailyForecast";
 
 const styles = {
   App: {
@@ -293,7 +293,7 @@ function App(props) {
           <div className={classes.Today}>Today</div>
           <div className={classes.ViewReport}>View Report</div>
         </div>
-        < HourForecast days={dailyForecast} />
+        < DailyForecast days={dailyForecast} />
         <div className={classes.BottomMenu}></div>
       </div >
     </div >

@@ -11,7 +11,7 @@ const weatherFetch = async (Latt, Long, setTemp, setIsDark, setClouds, setHumidi
         },
     })
     console.log(`Getting Temprature: ${response.data.current.temp}`);
-    setTemp(response.data.current.temp);
+    setTemp(Math.round(response.data.current.temp));
     // set humidity
     console.log(`Getting Humidity: ${response.data.current.humidity}`);
     setHumidity(response.data.current.humidity);
