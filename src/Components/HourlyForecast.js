@@ -4,7 +4,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import classNames from "classnames";
 
 const styles = {
-    DailyForecast: {
+    HourlyForecast: {
         width: '100%',
         display: 'flex',
         flexWrap: 'nowrap',
@@ -44,21 +44,30 @@ const styles = {
     },
 }
 
-const DailyForecast = (props) => {
-    const { classes, days } = props;
+const HourlyForecast = (props) => {
+    const { classes, hours } = props;
 
+
+    // < PerfectScrollbar >
+    //             < div className={classes.HourForecast} >
+    //                 <h1>{day.day}</h1>
+    //                 <h1>{day.max}</h1>
+    //                 <h1>{day.min}</h1>
+    //                 <img src={`https://openweathermap.org/img/wn/${day.icon}.png`} alt="" />
+    //             </div>
+    //         </PerfectScrollbar >
 
     return (
-        // for every day in days array display day name, temp and icon
+        // for every day in days array display day name, max temp, min temp, icon
         <PerfectScrollbar>
-            <div className={classes.DailyForecast}>
-                {days.map((day, index) => {
+            <div className={classes.HourlyForecast}>
+                {hours.map((hour, index) => {
                     return (
                         <div className={classes.Card} key={index}>
-                            <div className={classes.Card_day}>{day.day}</div>
+                            <div className={classes.Card_day}>{hour.day}</div>
                             <div className={classes.Card_double}>
-                                <img className={classes.Card_icon} src={`https://openweathermap.org/img/wn/${day.icon}.png`} alt="" />
-                                <div className={classes.Card_temp}>{day.temp}</div>
+                                <img className={classes.Card_icon} src={`https://openweathermap.org/img/wn/${hour.icon}.png`} alt="" />
+                                <div className={classes.Card_temp}>{hour.temp}</div>
                             </div>
                         </div>
                     )
@@ -68,7 +77,7 @@ const DailyForecast = (props) => {
     )
 }
 // <PerfectScrollbar>
-//     <div className={classes.DailyForecast}>
+//     <div className={classes.HourForecast}>
 //         <div className={classes.Card}><h2>Card</h2></div>
 //     </div >
 // </PerfectScrollbar>
@@ -76,4 +85,4 @@ const DailyForecast = (props) => {
 //     )
 // }
 
-export default withStyles(styles)(memo(DailyForecast));
+export default withStyles(styles)(memo(HourlyForecast));

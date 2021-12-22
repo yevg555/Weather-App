@@ -25,7 +25,7 @@ const weatherFetch = async (Latt, Long, setTemp, setIsDark, setClouds, setHumidi
     if (response.data.current.sunset - response.data.current.dt < 0) {
         setIsDark(true)
     }
-    // forecast for the next week, round the degrees
+    // fetch forecast for the next week, round the degrees
 
     const forecast = response.data.daily.map(day => {
         return {
@@ -36,6 +36,18 @@ const weatherFetch = async (Latt, Long, setTemp, setIsDark, setClouds, setHumidi
     })
     console.log(forecast);
     setDailyForecast(forecast)
+
+    // fetch hourly forecast
+    const hourlyForecast = response.data.hourly.map(hour => {
+        return {
+            hour: new Date(hour.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric' }),
+            temp: `${Math.round(hour.temp)}°`,
+            icon: hour.weather[0].icon,
+        }
+    })
+    console.log(hourlyForecast);
+
+
 
 };
 

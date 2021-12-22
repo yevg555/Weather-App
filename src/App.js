@@ -150,6 +150,7 @@ function App(props) {
   const [isReversed, setIsReversed] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [dailyForecast, setDailyForecast] = useState([]);
+  const [hourlyForecast, setHourlyForecast] = useState([]);
   const { classes } = props;
 
 
@@ -231,7 +232,7 @@ function App(props) {
       previousValues.current.Latt !== Latt
     ) {
       // execute logic
-      weatherFetch(Latt, Long, setTemp, setIsDark, setClouds, setHumidity, setWind, setDailyForecast)
+      weatherFetch(Latt, Long, setTemp, setIsDark, setClouds, setHumidity, setWind, setDailyForecast, setHourlyForecast)
       // update to curr values
       previousValues.current = { Long, Latt }
     };
