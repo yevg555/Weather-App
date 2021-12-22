@@ -13,9 +13,15 @@ import HourForecast from "./Components/HourForecast";
 
 const styles = {
   App: {
+    overflowX: 'auto',
+    overflowScrolling: 'touch',
+    '&::-webkit-scrollbar': {
+      display: 'none',
+    },
     paddingTop: '2rem',
     display: 'flex',
     justifyContent: 'center',
+
   },
   Container: {
     height: '90vh',
@@ -125,6 +131,7 @@ const styles = {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    height: '10vh',
     padding: '16px 16px 16px 5px',
 
   }
@@ -142,6 +149,7 @@ function App(props) {
   const [date, setDate] = useState('');
   const [isReversed, setIsReversed] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [dailyForecast, setDailyForecast] = useState([]);
   const { classes } = props;
 
 
@@ -223,13 +231,12 @@ function App(props) {
       previousValues.current.Latt !== Latt
     ) {
       // execute logic
-      weatherFetch(Latt, Long, setTemp, setIsDark, setClouds, setHumidity, setWind)
+      weatherFetch(Latt, Long, setTemp, setIsDark, setClouds, setHumidity, setWind, setDailyForecast)
       // update to curr values
       previousValues.current = { Long, Latt }
     };
   })
 
-  const hours = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   return (
     <div className={classes.App}>
       <div className={classNames(classes.Container, {
@@ -286,7 +293,7 @@ function App(props) {
           <div className={classes.Today}>Today</div>
           <div className={classes.ViewReport}>View Report</div>
         </div>
-        < HourForecast hours={hours} />
+        < HourForecast days={dailyForecast} />
         <div className={classes.BottomMenu}></div>
       </div >
     </div >

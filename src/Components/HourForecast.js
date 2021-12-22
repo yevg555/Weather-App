@@ -5,8 +5,6 @@ import classNames from "classnames";
 
 const styles = {
     HourForecast: {
-        // make this div width of 100 of the container
-
         width: '100%',
         display: 'flex',
         flexWrap: 'nowrap',
@@ -20,37 +18,71 @@ const styles = {
     },
     Card: {
         flex: '0 0 auto',
-        border: '2px solid $red',
         background: 'inherit',
         //
         position: 'static',
-        width: 166,
-        height: 85,
-        left: 0,
-        top: 0,
+        width: '10rem',
+        height: '4.5rem',
         margin: '0 0.6rem 0 0.2rem',
         background: '#A7B4E0',
-        borderRadius: 30,
-    }
+        borderRadius: 20,
+    },
+    Card_day: {
+        marginTop: '0.1rem',
+        marginBottom: '0.2rem',
+    },
+    Card_double: {
+        display: 'inline-flex',
+        alignItems: 'center',
+    },
+    Card_temp: {
+        height: '100%',
+        marginLeft: '1rem',
+    },
+    Card_icon: {
+        alignSelf: 'flex-start',
+    },
 }
 
 const HourForecast = (props) => {
-    const { classes } = props;
+    const { classes, days } = props;
+
+
+    // < PerfectScrollbar >
+    //             < div className={classes.HourForecast} >
+    //                 <h1>{day.day}</h1>
+    //                 <h1>{day.max}</h1>
+    //                 <h1>{day.min}</h1>
+    //                 <img src={`https://openweathermap.org/img/wn/${day.icon}.png`} alt="" />
+    //             </div>
+    //         </PerfectScrollbar >
 
     return (
-
+        // for every day in days array display day name, max temp, min temp, icon
         <PerfectScrollbar>
             <div className={classes.HourForecast}>
-                <div className={classes.Card}><h2>Card</h2></div>
-                <div className={classes.Card}><h2>Card</h2></div>
-                <div className={classes.Card}><h2>Card</h2></div>
-                <div className={classes.Card}><h2>Card</h2></div>
-                <div className={classes.Card}><h2>Card</h2></div>
-                <div className={classes.Card}><h2>Card</h2></div>
-                <div className={classes.Card}><h2>Card</h2></div>
-            </div >
+                {days.map((day, index) => {
+                    return (
+                        <div className={classes.Card} key={index}>
+                            <div className={classes.Card_day}>{day.day}</div>
+                            <div className={classes.Card_double}>
+                                <img className={classes.Card_icon} src={`https://openweathermap.org/img/wn/${day.icon}.png`} alt="" />
+                                <div className={classes.Card_temp}>{day.temp}</div>
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
         </PerfectScrollbar>
     )
 }
+// <PerfectScrollbar>
+//     <div className={classes.HourForecast}>
+//         <div className={classes.Card}><h2>Card</h2></div>
+//     </div >
+// </PerfectScrollbar>
+
+//     )
+// }
 
 export default withStyles(styles)(memo(HourForecast));
