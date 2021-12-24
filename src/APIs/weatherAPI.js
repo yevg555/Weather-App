@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const weatherFetch = async (Latt, Long, setTemp, setIsDark, setClouds, setHumidity, setWind, setDailyForecast) => {
+const weatherFetch = async (Latt, Long, setTemp, setIsDark, setClouds, setHumidity, setWind, setDailyForecast, setHourlyForecast) => {
     const response = await axios.get(`https://api.openweathermap.org/data/2.5/onecall`, {
         params: {
             lat: `${Latt}`,
@@ -15,9 +15,10 @@ const weatherFetch = async (Latt, Long, setTemp, setIsDark, setClouds, setHumidi
     // set humidity
     console.log(`Getting Humidity: ${response.data.current.humidity}`);
     setHumidity(response.data.current.humidity);
-    // set wind
+    // fetch wind in m/s
     console.log(`Getting Wind: ${response.data.current.wind_speed}`);
-    setWind(response.data.current.wind_speed);
+    // convert wind from meters/s to km/h and set it to state
+    setWind(Math.round(response.data.current.wind_speed * 3.6));
     // set clouds
     console.log(`Getting Clouds: ${response.data.current.clouds}`);
     setClouds(response.data.current.clouds);
@@ -45,10 +46,8 @@ const weatherFetch = async (Latt, Long, setTemp, setIsDark, setClouds, setHumidi
             icon: hour.weather[0].icon,
         }
     })
-    console.log(hourlyForecast);
-
-
-
+    // take only the next 12 hours of the forecast and set them to the state
+    setHourlyForecast(hourlyForecast.slice(0, 13))
 };
 
 // get weather for the next 12 hours

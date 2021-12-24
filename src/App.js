@@ -10,6 +10,7 @@ import classNames from "classnames";
 import Celcius from './images/c-new.js'
 import TempIcon from './images/tempIcon'
 import DailyForecast from "./Components/DailyForecast";
+import HourlyForecast from "./Components/HourlyForecast";
 
 const styles = {
   App: {
@@ -115,9 +116,12 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '2rem',
-    fontSize: '0.7rem',
+    fontSize: '0.9rem',
     fontWeight: 300,
+    marginTop: '1rem',
+    marginBottom: '1.5rem',
+    marginLeft: '1.5rem',
+    marginRight: '1.5rem',
   },
   ViewReport: {
     "&:hover": {
@@ -294,7 +298,7 @@ function App(props) {
           <div className={classes.Today}>Today</div>
           <div className={classes.ViewReport}>View Report</div>
         </div>
-        < DailyForecast days={dailyForecast} />
+        < HourlyForecast hours={hourlyForecast} />
         <div className={classes.BottomMenu}></div>
       </div >
     </div >

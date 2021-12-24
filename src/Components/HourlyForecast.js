@@ -1,6 +1,7 @@
 import { React, memo } from 'react';
 import { withStyles } from "@material-ui/styles";
-import PerfectScrollbar from 'react-perfect-scrollbar'
+import SimpleBar from 'simplebar-react';
+import 'simplebar/dist/simplebar.min.css';
 import classNames from "classnames";
 
 const styles = {
@@ -9,12 +10,7 @@ const styles = {
         display: 'flex',
         flexWrap: 'nowrap',
         position: 'relative',
-        overflowX: 'auto',
-        height: 'auto',
-        overflowScrolling: 'touch',
-        '&::-webkit-scrollbar': {
-            display: 'none',
-        },
+
     },
     Card: {
         flex: '0 0 auto',
@@ -27,7 +23,7 @@ const styles = {
         background: '#A7B4E0',
         borderRadius: 20,
     },
-    Card_day: {
+    Card_hour: {
         marginTop: '0.1rem',
         marginBottom: '0.2rem',
     },
@@ -42,29 +38,22 @@ const styles = {
     Card_icon: {
         alignSelf: 'flex-start',
     },
+    SimpleBarScrollbar: {
+        overflowY: 'hidden',
+    },
 }
 
 const HourlyForecast = (props) => {
     const { classes, hours } = props;
 
-
-    // < PerfectScrollbar >
-    //             < div className={classes.HourForecast} >
-    //                 <h1>{day.day}</h1>
-    //                 <h1>{day.max}</h1>
-    //                 <h1>{day.min}</h1>
-    //                 <img src={`https://openweathermap.org/img/wn/${day.icon}.png`} alt="" />
-    //             </div>
-    //         </PerfectScrollbar >
-
     return (
         // for every day in days array display day name, max temp, min temp, icon
-        <PerfectScrollbar>
+        <SimpleBar data-simplebar-direction='rtl' className={classes.SimpleBarScrollbar}>
             <div className={classes.HourlyForecast}>
                 {hours.map((hour, index) => {
                     return (
                         <div className={classes.Card} key={index}>
-                            <div className={classes.Card_day}>{hour.day}</div>
+                            <div className={classes.Card_hour}>{hour.hour}</div>
                             <div className={classes.Card_double}>
                                 <img className={classes.Card_icon} src={`https://openweathermap.org/img/wn/${hour.icon}.png`} alt="" />
                                 <div className={classes.Card_temp}>{hour.temp}</div>
@@ -73,7 +62,7 @@ const HourlyForecast = (props) => {
                     )
                 })}
             </div>
-        </PerfectScrollbar>
+        </SimpleBar >
     )
 }
 // <PerfectScrollbar>
